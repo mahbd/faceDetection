@@ -26,12 +26,12 @@ def save_data():
 
 
 def find_best_match(face_encoding):
-    result = ('none', [], 1)
+    result = ('none', 1)
     for name, face_encodings in info.items():
         compare_values = face_recognition.face_distance(face_encodings, face_encoding)
-        for index, value in enumerate(compare_values):
-            if value < result[2]:
-                result = (name, index, value)
+        value = sum(compare_values) / len(compare_values)
+        if value < result[1]:
+            result = (name, value)
     return result
 
 
@@ -46,8 +46,8 @@ def recognize_mark_face(image_file):
         cv2.rectangle(image_show, (location[3], location[0]), (location[1], location[2]), (255, 0, 255), 3)
         cv2.imshow("Image", image_show)
         cv2.waitKey(100)
-        if best_match[2] < 0.6:
-            name = input(f'Is it {best_match[0]} || pos={round(best_match[2], 3)}?: ')
+        if best_match[1] < 0.6:
+            name = input(f'Is it {best_match[0]} || pos={round(best_match[1], 3)}?: ')
             if not name:  # Guess is correct if user doesn't change name
                 name = best_match[0]
         else:
@@ -76,11 +76,9 @@ def recognize_write_name(image_path):
         cv2.rectangle(image, (l[3] - 20, l[0] - 20), (l[1] + 20, l[2] + 20), (255, 0, 255), 2)
         cv2.rectangle(image, (l[3] - 20, l[2] + 20), (l[1] + 20, l[2] + 40), (0, 0, 0), cv2.FILLED)
         # Write text
-        cv2.putText(image, str(round(matched[2], 2)), (l[3] - 20, l[0] - 20), cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 1)
-        if matched[2] < 0.4:
+        cv2.putText(image, str(round(matched[1], 2)), (l[3] - 20, l[0] - 20), cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 1)
+        if matched[1] < 0.6:
             cv2.putText(image, matched[0], txt_loc, cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 1)
-        elif matched[2] < 0.6:
-            cv2.putText(image, "Probably " + matched[0], txt_loc, cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 1)
         else:
             cv2.putText(image, "Unknown", txt_loc, cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 1)
     cv2.imshow('Image', image)
