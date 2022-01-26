@@ -114,6 +114,7 @@ def test_face():
         folder_path = os.path.relpath(filedialog.askdirectory(), ".")
         images = os.listdir(folder_path)
         for im in images:
+            print(im)
             if recognize_write_name(os.path.join(folder_path, im)):
                 break
     else:
@@ -124,7 +125,8 @@ def test_face():
 
 
 def show_data_amount():
-    load_previous_data()
+    if info == {}:
+        load_previous_data()
     for name, data in info.items():
         print(f'{name}\t{len(data)}')
 
